@@ -15,6 +15,12 @@ import AllStudents from "../pages/dashboards/AllStudents";
 import TeacherDashboard from "../pages/dashboards/TeacherDashboard";
 import StudentDashboard from "../pages/dashboards/StudentDashboard";
 import StudentsUnderTeacher from "../pages/dashboards/StudentUnderTeacher";
+import CreateExamPage from "../pages/dashboards/Exams/CreateExamPage";
+import ExamListPage from "../pages/dashboards/Exams/ExamListPage";
+import ExamQuestionsPage from "../pages/dashboards/Exams/ExamQuestionsPage";
+import EditExamPage from "../pages/dashboards/Exams/EditExamPage";
+
+
 
 const routes = [
   {
@@ -46,6 +52,40 @@ const routes = [
               </RequireAuth>
             ),
           },
+          {
+  path: "exams/create",
+  element: (
+    <RequireAuth allowedRoles={["admin"]}>
+      <CreateExamPage />
+    </RequireAuth>
+  ),
+},
+{
+  path: "exams",
+  element: (
+    <RequireAuth allowedRoles={["admin"]}>
+      <ExamListPage />
+    </RequireAuth>
+  ),
+},
+{
+  path: "exams/:examId/questions",
+  element: (
+    <RequireAuth allowedRoles={["admin"]}>
+      <ExamQuestionsPage />
+    </RequireAuth>
+  ),
+},
+{
+  path: "exams/:examId/edit",
+  element: (
+    <RequireAuth allowedRoles={["admin"]}>
+      <EditExamPage />
+    </RequireAuth>
+  ),
+},
+
+
           {
             path: "students",
             element: (
