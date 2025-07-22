@@ -1,4 +1,4 @@
-// src/pages/dashboards/ExamListPage.jsx
+// src/pages/dashboards/Teachers/TeacherExamListPage.jsx
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -14,8 +14,6 @@ import {
   Alert,
   Box,
   Button,
-  TextField,
-  MenuItem,
   Collapse,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -23,17 +21,14 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-
 import { useNavigate } from "react-router-dom";
 import axios from "../../../api/axios";
 
-const ExamListPage = () => {
+const TeacherExamListPage = () => {
   const navigate = useNavigate();
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filterScope, setFilterScope] = useState("all");
-  const [standard, setStandard] = useState("all");
   const [expandedExamId, setExpandedExamId] = useState(null);
 
   const fetchExams = async () => {
@@ -41,7 +36,8 @@ const ExamListPage = () => {
     setError("");
     try {
       const res = await axios.get("/api/exams");
-      setExams(res.data.results || []);
+      const classLevelExams = res.data.results.filter((e) => e.scope === "class");
+      setExams(classLevelExams);
     } catch {
       setError("Failed to load exams.");
     } finally {
@@ -63,19 +59,6 @@ const ExamListPage = () => {
     }
   };
 
-const filteredExams = exams.filter((e) => {
-  if (filterScope === "school" && e.scope !== "school") return false;
-  if (filterScope === "class" && e.scope === "school") return false;
-  if (standard !== "all") {
-    const examClass = e.scope === "school"
-      ? e.target_standard
-      : e.target_class?.split("-")[0];
-    if (examClass !== standard) return false;
-  }
-  return true;
-});
-
-
   const toggleExpand = (id) => {
     setExpandedExamId((prev) => (prev === id ? null : id));
   };
@@ -83,41 +66,8 @@ const filteredExams = exams.filter((e) => {
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Typography variant="h5" fontWeight="bold" gutterBottom>
-        Manage Exams
+        My Exams
       </Typography>
-
-      <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-        <TextField
-          select
-          size="small"
-          label="Filter by Type"
-          value={filterScope}
-          onChange={(e) => setFilterScope(e.target.value)}
-        >
-          <MenuItem value="all">All Exams</MenuItem>
-          <MenuItem value="school">School-Level</MenuItem>
-          <MenuItem value="class">Class-Level</MenuItem>
-        </TextField>
-
-        <TextField
-          select
-          size="small"
-          label="Filter by Class"
-          value={standard}
-          onChange={(e) => setStandard(e.target.value)}
-        >
-          <MenuItem value="all">All Classes</MenuItem>
-          {Array.from({ length: 12 }, (_, i) => (
-            <MenuItem key={i + 1} value={String(i + 1)}>
-              Class {i + 1}
-            </MenuItem>
-          ))}
-        </TextField>
-
-        <Button variant="outlined" onClick={fetchExams}>
-          Refresh
-        </Button>
-      </Box>
 
       {loading ? (
         <CircularProgress />
@@ -129,7 +79,6 @@ const filteredExams = exams.filter((e) => {
             <TableHead sx={{ bgcolor: "#f5f5f5" }}>
               <TableRow>
                 <TableCell>Title</TableCell>
-                <TableCell>Type</TableCell>
                 <TableCell>Class</TableCell>
                 <TableCell>Start</TableCell>
                 <TableCell>Duration</TableCell>
@@ -137,27 +86,19 @@ const filteredExams = exams.filter((e) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredExams.length === 0 ? (
+              {exams.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
+                  <TableCell colSpan={5} align="center">
                     No exams found.
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredExams.map((exam) => (
+                exams.map((exam) => (
                   <React.Fragment key={exam.id}>
                     <TableRow>
                       <TableCell>{exam.title}</TableCell>
-                      <TableCell>{exam.scope}</TableCell>
+                      <TableCell>{exam.target_class}</TableCell>
                       <TableCell>
-                        {exam.scope === "school"
-                          ? `Class ${exam.target_standard}`
-                          : exam.target_class}
-                      </TableCell>
-                      <TableCell>
-<<<<<<< HEAD
-                        {new Date(exam.start_time).toLocaleString()}
-=======
                         {new Date(exam.start_time).toLocaleString("en-IN", {
   timeZone: "Asia/Kolkata",
   hour: "2-digit",
@@ -167,25 +108,22 @@ const filteredExams = exams.filter((e) => {
   day: "2-digit",
   hour12: true,
 })}
->>>>>>> feature/completeExamModule
                       </TableCell>
                       <TableCell>{exam.duration_minutes} min</TableCell>
                       <TableCell>
-                        {exam.scope === "school" && (
-                          <IconButton
-                            title="Edit"
-                            color="secondary"
-                            onClick={() =>
-                              navigate(`/dashboard/exams/${exam.id}/edit`)
-                            }
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        )}
                         <IconButton
-                          title="Update Questions"
+                          title="Edit"
+                          color="secondary"
                           onClick={() =>
-                            navigate(`/dashboard/exams/${exam.id}/questions`)
+                            navigate(`/dashboard/teachers/exams/${exam.id}/edit`)
+                          }
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          title="Questions"
+                          onClick={() =>
+                            navigate(`/dashboard/teachers/exams/${exam.id}/questions`)
                           }
                           color="primary"
                         >
@@ -212,24 +150,14 @@ const filteredExams = exams.filter((e) => {
                     </TableRow>
 
                     <TableRow>
-                      <TableCell colSpan={6} sx={{ p: 0, border: "none" }}>
+                      <TableCell colSpan={5} sx={{ p: 0, border: "none" }}>
                         <Collapse in={expandedExamId === exam.id}>
                           <Box sx={{ p: 2, bgcolor: "#fafafa" }}>
                             <Typography variant="subtitle2">
                               <strong>Title:</strong> {exam.title}
                             </Typography>
                             <Typography variant="subtitle2">
-                              <strong>Scope:</strong> {exam.scope}
-                            </Typography>
-                            <Typography variant="subtitle2">
-                              <strong>Target Standard:</strong>{" "}
-                              {exam.target_standard}
-                            </Typography>
-                            <Typography variant="subtitle2">
                               <strong>Start Time:</strong>{" "}
-<<<<<<< HEAD
-                              {new Date(exam.start_time).toLocaleString()}
-=======
                               {new Date(exam.start_time).toLocaleString("en-IN", {
   timeZone: "Asia/Kolkata",
   hour: "2-digit",
@@ -239,17 +167,10 @@ const filteredExams = exams.filter((e) => {
   day: "2-digit",
   hour12: true,
 })}
->>>>>>> feature/completeExamModule
                             </Typography>
                             <Typography variant="subtitle2">
                               <strong>Duration:</strong>{" "}
                               {exam.duration_minutes} minutes
-                            </Typography>
-                            <Typography variant="subtitle2">
-                              <strong>Created By:</strong>{" "}
-                              {exam.scope === "school"
-                                ? "Admin"
-                                : "Teacher"}
                             </Typography>
                           </Box>
                         </Collapse>
@@ -266,4 +187,4 @@ const filteredExams = exams.filter((e) => {
   );
 };
 
-export default ExamListPage;
+export default TeacherExamListPage;
