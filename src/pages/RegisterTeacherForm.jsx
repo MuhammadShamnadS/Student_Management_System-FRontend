@@ -1,0 +1,146 @@
+// src/pages/dashboards/Teachers/TeacherRegisterForm.jsx
+import React, { useState } from "react";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  Alert,
+  Paper,
+  Box,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import axios from "../api/axios";
+
+const TeacherRegisterForm = () => {
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError: setFieldError,
+    formState: { errors },
+  } = useForm();
+
+  const flattenErrors = (errors, parentKey = "") => {
+    let flatErrors = {};
+    for (const [key, value] of Object.entries(errors)) {
+      const fullKey = parentKey ? `${parentKey}.${key}` : key;
+
+      if (Array.isArray(value)) {
+        flatErrors[fullKey] = value.join(" ");
+      } else if (typeof value === "object" && value !== null) {
+        flatErrors = { ...flatErrors, ...flattenErrors(value, fullKey) };
+      }
+    }
+    return flatErrors;
+  };
+
+  const onSubmit = async (data) => {
+    setError("");
+    setSuccess("");
+    const payload = {
+      user: {
+        username: data.username,
+        email: data.email,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        password: data.password,
+      },
+      phone: data.phone,
+      subject_specialization: data.subject_specialization,
+      employee_id: data.employee_id,
+      status: data.status,
+      date_of_joining: data.date_of_joining,
+      assigned_class: `${data.assigned_class}-${data.division}`,
+    };
+
+    console.log("Submitting teacher payload:", payload);
+
+    try {
+      await axios.post("/api/teachers", payload);
+      setSuccess("Teacher registered successfully!");
+      reset();
+    } catch (err) {
+      console.error("Error response:", err.response?.data);
+      const errorData = err.response?.data;
+
+      if (typeof errorData === "object" && errorData !== null) {
+        const flatErrors = flattenErrors(errorData);
+
+        for (const [field, message] of Object.entries(flatErrors)) {
+          const formField = field.includes("user.") ? field.split(".")[1] : field;
+
+          if (formField in data) {
+            setFieldError(formField, { type: "manual", message });
+          } else {
+            setError((prev) => prev + `${field}: ${message}\n`);
+          }
+        }
+      } else {
+        setError("Registration failed.");
+      }
+    }
+  };
+
+  return (
+    <Container maxWidth="sm">
+      <Paper elevation={3} sx={{ p: 4, mt: 8 }}>
+        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/dashboard/teachers")}>
+          Back
+        </Button>
+
+        <Typography variant="h5" gutterBottom>Register Teacher</Typography>
+
+        {error && <Alert severity="error" sx={{ mt: 2, whiteSpace: 'pre-line' }}>{error}</Alert>}
+        {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
+
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 2 }}>
+          <TextField fullWidth label="Username" margin="normal" {...register("username", { required: "Username is required" })} error={!!errors.username} helperText={errors.username?.message} />
+          <TextField fullWidth label="Email" margin="normal" {...register("email", { required: "Email is required" })} error={!!errors.email} helperText={errors.email?.message} />
+          <TextField fullWidth label="First Name" margin="normal" {...register("first_name", { required: "First name is required" })} error={!!errors.first_name} helperText={errors.first_name?.message} />
+          <TextField fullWidth label="Last Name" margin="normal" {...register("last_name") } error={!!errors.last_name} helperText={errors.last_name?.message} />
+          <TextField fullWidth label="Password" type="password" margin="normal" {...register("password", { required: "Password is required" })} error={!!errors.password} helperText={errors.password?.message} />
+          <TextField fullWidth label="Phone" margin="normal" {...register("phone", { required: "Phone is required" })} error={!!errors.phone} helperText={errors.phone?.message} />
+          <TextField fullWidth label="Subject Specialization" margin="normal" {...register("subject_specialization", { required: "Subject is required" })} error={!!errors.subject_specialization} helperText={errors.subject_specialization?.message} />
+          <TextField fullWidth label="Employee ID" margin="normal" defaultValue="EMP" {...register("employee_id", { required: "Employee ID is required" })} error={!!errors.employee_id} helperText={errors.employee_id?.message} />
+
+          <FormControl fullWidth margin="normal" error={!!errors.assigned_class}>
+            <InputLabel>Class</InputLabel>
+            <Select defaultValue="" label="Class" {...register("assigned_class", { required: "Class is required" })}>
+              {Array.from({ length: 12 }, (_, i) => (
+                <MenuItem key={i + 1} value={i + 1}>Class {i + 1}</MenuItem>
+              ))}
+            </Select>
+            {errors.assigned_class && <Typography variant="caption" color="error">{errors.assigned_class.message}</Typography>}
+          </FormControl>
+
+          <FormControl fullWidth margin="normal" error={!!errors.division}>
+            <InputLabel>Division</InputLabel>
+            <Select defaultValue="" label="Division" {...register("division", { required: "Division is required" })}>
+              <MenuItem value="A">A</MenuItem>
+              <MenuItem value="B">B</MenuItem>
+            </Select>
+            {errors.division && <Typography variant="caption" color="error">{errors.division.message}</Typography>}
+          </FormControl>
+
+          <TextField fullWidth label="Date of Joining" type="date" margin="normal" InputLabelProps={{ shrink: true }} {...register("date_of_joining", { required: "Date of joining is required" })} error={!!errors.date_of_joining} helperText={errors.date_of_joining?.message} />
+          <TextField fullWidth label="Status" margin="normal" defaultValue="active" {...register("status")} />
+
+          <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>Register</Button>
+        </Box>
+      </Paper>
+    </Container>
+  );
+};
+
+export default TeacherRegisterForm;

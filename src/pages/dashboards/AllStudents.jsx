@@ -1,3 +1,4 @@
+// src/pages/dashboards/Students/AllStudents.jsx
 import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import {
@@ -14,13 +15,22 @@ import {
   Paper,
   Stack,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Edit, Delete } from "@mui/icons-material";
+import EditStudentForm from "../StudentEditForm";
 
 const AllStudents = () => {
   const [students, setStudents] = useState([]);
   const [count, setCount] = useState(1);
   const [page, setPage] = useState(1);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   const navigate = useNavigate();
 
   const fetchStudents = async (pageNum = 1) => {
@@ -41,19 +51,42 @@ const AllStudents = () => {
     setPage(value);
   };
 
+  const handleStudentClick = (student) => {
+    setSelectedStudent(student);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this student?")) {
+      try {
+        await axios.delete(`/api/students/${id}`);
+        fetchStudents(page);
+        setSelectedStudent(null);
+      } catch (err) {
+        console.error("Delete failed", err);
+      }
+    }
+  };
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         mb={3}
+        px={2}
+        py={2}
+        borderRadius={2}
+        boxShadow={2}
+        bgcolor="#f0f4f8"
       >
         <Typography variant="h5" fontWeight="bold">
           All Students
         </Typography>
-        <Button variant="contained" onClick={() => navigate("/register")}>
+        <Button
+          variant="contained"
+          onClick={() => navigate("/dashboard/register/student")}
+        >
           Register Student
         </Button>
       </Box>
@@ -81,7 +114,9 @@ const AllStudents = () => {
                 <TableRow
                   key={student.id}
                   hover
+                  onClick={() => handleStudentClick(student)}
                   sx={{
+                    cursor: "pointer",
                     transition: "background-color 0.2s",
                     "&:hover": {
                       backgroundColor: "#f9f9f9",
@@ -117,6 +152,58 @@ const AllStudents = () => {
           shape="rounded"
         />
       </Box>
+
+      {selectedStudent && (
+        <Dialog
+          open={Boolean(selectedStudent)}
+          onClose={() => setSelectedStudent(null)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Student Details</DialogTitle>
+          <DialogContent>
+            <Box my={1}><strong>Name:</strong> {selectedStudent.user.first_name} {selectedStudent.user.last_name}</Box>
+            <Box my={1}><strong>Email:</strong> {selectedStudent.user.email}</Box>
+            <Box my={1}><strong>Username:</strong> {selectedStudent.user.username}</Box>
+            <Box my={1}><strong>Phone:</strong> {selectedStudent.phone}</Box>
+            <Box my={1}><strong>Class:</strong> {selectedStudent.student_class}</Box>
+            <Box my={1}><strong>Roll Number:</strong> {selectedStudent.roll_number}</Box>
+            <Box my={1}><strong>Status:</strong> {selectedStudent.status}</Box>
+            <Box my={1}><strong>Date of Birth:</strong> {selectedStudent.date_of_birth}</Box>
+            <Box my={1}><strong>Admission Date:</strong> {selectedStudent.admission_date}</Box>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              startIcon={<Delete />}
+              color="error"
+              onClick={() => handleDelete(selectedStudent.id)}
+            >
+              Delete
+            </Button>
+            <Button
+              startIcon={<Edit />}
+              onClick={() => {
+                setShowEditForm(true);
+              }}
+              variant="contained"
+            >
+              Edit
+            </Button>
+            <Button onClick={() => setSelectedStudent(null)}>Close</Button>
+          </DialogActions>
+        </Dialog>
+      )}
+
+      {showEditForm && selectedStudent && (
+        <EditStudentForm
+          studentId={selectedStudent.id}
+          onClose={() => {
+            setShowEditForm(false);
+            fetchStudents(page);
+          }}
+          onUpdate={() => fetchStudents(page)}
+        />
+      )}
     </Container>
   );
 };
