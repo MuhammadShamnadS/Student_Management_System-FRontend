@@ -38,6 +38,10 @@ const DashboardLayout = () => {
       { label: "Create Exam", path: "/dashboard/exams/create" },
       { label: "Manage Exams", path: "/dashboard/exams" },
     ],
+<<<<<<< HEAD
+    teacher: [{ label: "Dashboard", path: "/dashboard" }],
+    student: [{ label: "Dashboard", path: "/dashboard" }],
+=======
     teacher: [
       { label: "Home", path: "/dashboard" },
       { label: "My Students", path: "/dashboard/teachers/student"},
@@ -50,6 +54,7 @@ const DashboardLayout = () => {
       { label: "My Exams", path: "/dashboard/students/myexam" },
       { label: "My Score", path: "/dashboard/students/score" }
     ],
+>>>>>>> feature/completeExamModule
   };
 
   const links = navItems[user?.role] || [];
