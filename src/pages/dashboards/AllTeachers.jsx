@@ -1,3 +1,4 @@
+// src/pages/dashboards/Teachers/AllTeachers.jsx
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -15,9 +16,12 @@ import {
   Pagination,
   Chip,
   useMediaQuery,
+  IconButton,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import axios from "../../api/axios";
 
 const AllTeachers = () => {
@@ -26,6 +30,7 @@ const AllTeachers = () => {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
+  const [deletingId, setDeletingId] = useState(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -41,6 +46,19 @@ const AllTeachers = () => {
       setError("Failed to fetch teachers");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this teacher?")) return;
+    setDeletingId(id);
+    try {
+      await axios.delete(`/api/teachers/${id}`);
+      fetchTeachers();
+    } catch (err) {
+      alert("Failed to delete teacher");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -76,7 +94,7 @@ const AllTeachers = () => {
         <Typography variant="h5" fontWeight="bold">
           All Teachers
         </Typography>
-        <Button variant="contained" component={Link} to="/register" fullWidth={isMobile}>
+        <Button variant="contained" component={Link} to="/dashboard/register/teacher">
           Register Teacher
         </Button>
       </Box>
@@ -91,7 +109,7 @@ const AllTeachers = () => {
               <TableCell sx={{ fontWeight: "bold" }}>Phone</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Subject</TableCell>
               {!isMobile && <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>}
-              <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -120,14 +138,32 @@ const AllTeachers = () => {
                     </TableCell>
                   )}
                   <TableCell>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      component={Link}
-                      to={`/dashboard/teacher/${teacher.id}/students`}
-                    >
-                      View Students
-                    </Button>
+                    <Box display="flex" gap={1}>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        component={Link}
+                        to={`/dashboard/teacher/${teacher.id}/students`}
+                      >
+                        View Students
+                      </Button>
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        component={Link}
+                        to={`/dashboard/teachers/${teacher.id}/edit`}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(teacher.id)}
+                        disabled={deletingId === teacher.id}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))
