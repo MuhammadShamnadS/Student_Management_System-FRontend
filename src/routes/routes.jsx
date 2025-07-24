@@ -88,14 +88,12 @@ const routes = [
           { path: "students/myexam", element: <RequireAuth allowedRoles={["student"]}><StudentExamsPage /></RequireAuth> },
           { path: "students/score", element: <RequireAuth allowedRoles={["student"]}><StudentScoresPage /></RequireAuth> },
           { path: "student/exams/:examId/attend", element: <RequireAuth allowedRoles={["student"]}><StudentAttendExamPage /></RequireAuth> },
-<<<<<<< HEAD
           { path: "student/scores/:id", element: <RequireAuth allowedRoles={["student"]}><StudentExamDetailPage /></RequireAuth> },
     ],
   },
 ],
   },
 ]
-=======
->>>>>>> e7f8d13ccd520b63924c471dc98a89ffc04791bf
+
 
 export default routes;
