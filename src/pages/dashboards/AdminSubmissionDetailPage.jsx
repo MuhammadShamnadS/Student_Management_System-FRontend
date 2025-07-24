@@ -50,6 +50,9 @@ const AdminSubmissionDetailPage = () => {
           <strong>Student:</strong> {submission.student_name}
         </Typography>
         <Typography>
+            <strong>Roll no: </strong>{submission.student_roll_number}
+        </Typography>
+        <Typography>
           <strong>Exam:</strong> {submission.exam_title}
         </Typography>
         <Typography>
@@ -71,26 +74,31 @@ const AdminSubmissionDetailPage = () => {
 <ListItemText
   primary={`Q${index + 1}. ${ans.question_text}`}
   secondary={
-    <>
-      <Typography variant="body2" component="div">
+    <span>
+      <Typography variant="body2" component="span" display="block">
         <strong>Selected Option:</strong>{" "}
         {ans[`option${ans.selected_option}`]} ({ans.selected_option})
       </Typography>
-      <Typography variant="body2" component="div">
+      <Typography variant="body2" component="span" display="block">
         <strong>Correct Option:</strong>{" "}
         {ans[`option${ans.correct_option}`]} ({ans.correct_option})
       </Typography>
       <Typography
         variant="body2"
-        component="div"
+        component="span"
+        display="block"
         color={ans.selected_option === ans.correct_option ? "green" : "red"}
       >
         <strong>Status:</strong>{" "}
-        {ans.selected_option === ans.correct_option ? "✅ Correct" : "❌ Incorrect"}
+        {ans.selected_option === ans.correct_option
+          ? "✅ Correct"
+          : "❌ Incorrect"}
       </Typography>
-    </>
+    </span>
   }
 />
+
+
 
             </ListItem>
             <Divider />

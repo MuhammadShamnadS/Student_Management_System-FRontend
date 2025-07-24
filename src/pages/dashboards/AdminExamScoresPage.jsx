@@ -52,6 +52,7 @@ const AdminExamScorePage = () => {
       .catch(() => setStudents([]))
       .finally(() => setLoading(false));
   }, [selectedExamId]);
+  
 
   const handleView = (submissionId) => {
     navigate(`/dashboard/admin/submission/${submissionId}`);
@@ -130,6 +131,9 @@ const AdminExamScorePage = () => {
     <Paper sx={{ p: 2 }}>
       <Typography>
         <strong>{stu.student_name}</strong>
+      </Typography>
+      <Typography>
+        <strong>{stu.student_roll_number}</strong>
       </Typography>
       <Typography>
         Score: {stu.score !== null ? stu.score : "Not Submitted"}
