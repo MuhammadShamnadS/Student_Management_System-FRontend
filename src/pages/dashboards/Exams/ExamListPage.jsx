@@ -155,6 +155,9 @@ const filteredExams = exams.filter((e) => {
                           : exam.target_class}
                       </TableCell>
                       <TableCell>
+<<<<<<< HEAD
+                        {new Date(exam.start_time).toLocaleString()}
+=======
                         {new Date(exam.start_time).toLocaleString("en-IN", {
   timeZone: "Asia/Kolkata",
   hour: "2-digit",
@@ -164,6 +167,7 @@ const filteredExams = exams.filter((e) => {
   day: "2-digit",
   hour12: true,
 })}
+>>>>>>> feature/completeExamModule
                       </TableCell>
                       <TableCell>{exam.duration_minutes} min</TableCell>
                       <TableCell>
@@ -223,6 +227,9 @@ const filteredExams = exams.filter((e) => {
                             </Typography>
                             <Typography variant="subtitle2">
                               <strong>Start Time:</strong>{" "}
+<<<<<<< HEAD
+                              {new Date(exam.start_time).toLocaleString()}
+=======
                               {new Date(exam.start_time).toLocaleString("en-IN", {
   timeZone: "Asia/Kolkata",
   hour: "2-digit",
@@ -232,6 +239,7 @@ const filteredExams = exams.filter((e) => {
   day: "2-digit",
   hour12: true,
 })}
+>>>>>>> feature/completeExamModule
                             </Typography>
                             <Typography variant="subtitle2">
                               <strong>Duration:</strong>{" "}

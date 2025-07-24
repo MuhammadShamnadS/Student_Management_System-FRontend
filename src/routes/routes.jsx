@@ -22,6 +22,7 @@ import AllStudents from "../pages/dashboards/AllStudents";
 import AdminExamScorePage from "../pages/dashboards/AdminExamScoresPage";
 import TeacherDashboard from "../pages/dashboards/Teachers/TeacherDashboard";
 import StudentDashboardPage from "../pages/dashboards/Students/StudentDashboard";
+
 import StudentsUnderTeacher from "../pages/dashboards/StudentUnderTeacher";
 import CreateExamPage from "../pages/dashboards/Exams/CreateExamPage";
 import ExamListPage from "../pages/dashboards/Exams/ExamListPage";
@@ -59,7 +60,6 @@ const routes = [
         element: <DashboardLayout />,
         children: [
           { index: true, element: <DashboardRouter /> },
-
           { path: "students", element: <RequireAuth allowedRoles={["admin"]}><AllStudents /></RequireAuth> },
           { path: "teachers", element: <RequireAuth allowedRoles={["admin"]}><AllTeachers /></RequireAuth> },
           { path: "register/student", element: <RequireAuth allowedRoles={["admin"]}><StudentRegisterForm /></RequireAuth>, },
@@ -88,11 +88,14 @@ const routes = [
           { path: "students/myexam", element: <RequireAuth allowedRoles={["student"]}><StudentExamsPage /></RequireAuth> },
           { path: "students/score", element: <RequireAuth allowedRoles={["student"]}><StudentScoresPage /></RequireAuth> },
           { path: "student/exams/:examId/attend", element: <RequireAuth allowedRoles={["student"]}><StudentAttendExamPage /></RequireAuth> },
+<<<<<<< HEAD
           { path: "student/scores/:id", element: <RequireAuth allowedRoles={["student"]}><StudentExamDetailPage /></RequireAuth> },
     ],
   },
 ],
   },
 ]
+=======
+>>>>>>> e7f8d13ccd520b63924c471dc98a89ffc04791bf
 
 export default routes;
