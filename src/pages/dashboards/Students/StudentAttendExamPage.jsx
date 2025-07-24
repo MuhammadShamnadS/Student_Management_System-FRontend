@@ -50,32 +50,39 @@ const StudentAttendExamPage = () => {
 
   // Submit exam
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (Object.keys(answers).length !== questions.length) {
-      setError("Please answer all questions before submitting.");
-      return;
+  if (Object.keys(answers).length !== questions.length) {
+    setError("Please answer all questions before submitting.");
+    return;
+  }
+
+  const formattedAnswers = Object.entries(answers).map(
+    ([questionId, selectedOption]) => ({
+      question: parseInt(questionId),
+      selected_option: selectedOption,
+    })
+  );
+
+  try {
+    const res = await axios.post("/api/submissions", {
+      exam: parseInt(examId),
+      answers: formattedAnswers,
+    });
+
+    const submissionId = res.data?.id;
+    if (!submissionId) {
+      throw new Error("Submission ID not returned.");
     }
 
-    const formattedAnswers = Object.entries(answers).map(
-      ([questionId, selectedOption]) => ({
-        question: parseInt(questionId),
-        selected_option: selectedOption,
-      })
-    );
+    alert("Answers submitted successfully!");
+    navigate(`/dashboard/student/scores/${submissionId}`);
+  } catch (err) {
+    console.error(err);
+    setError("Submission failed. Please try again.");
+  }
+};
 
-    try {
-      await axios.post("/api/submissions", {
-        exam: parseInt(examId),
-        answers: formattedAnswers,
-      });
-      alert("Answers submitted successfully!");
-      navigate(`student/scores/${examId}`);
-    } catch (err) {
-      console.error(err);
-      setError("Submission failed. Please try again.");
-    }
-  };
 
   if (loading) return <CircularProgress sx={{ mt: 4 }} />;
   if (error) return <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>;
