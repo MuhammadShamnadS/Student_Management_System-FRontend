@@ -24,7 +24,7 @@ const PublicLayout = () => {
     );
   }
 
-  return <Outlet />; // 
+  return <Outlet />;
 };
 
 export default PublicLayout;

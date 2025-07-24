@@ -38,19 +38,13 @@ const AuthProvider = ({ children }) => {
 
   const detectUserRole = async (token) => {
     try {
-      await axios.get("/api/teachers/me", {
+      const res = await axios.get("/api/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return "teacher";
+      return res.data.role;
+      
     } catch (_) {
-      try {
-        await axios.get("/api/students/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        return "student";
-      } catch (_) {
-        return "admin";
-      }
+      console.log("Error to load role")
     }
   };
 

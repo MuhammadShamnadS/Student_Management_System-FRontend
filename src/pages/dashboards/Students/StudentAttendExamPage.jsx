@@ -24,7 +24,7 @@ const StudentAttendExamPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // 1. Load questions
+  // Load questions
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -40,7 +40,7 @@ const StudentAttendExamPage = () => {
     fetchQuestions();
   }, [examId]);
 
-  // 2. Handle option selection
+  // Handle answer selection
   const handleOptionChange = (questionId, selectedOption) => {
     setAnswers((prev) => ({
       ...prev,
@@ -48,9 +48,14 @@ const StudentAttendExamPage = () => {
     }));
   };
 
-  // 3. Submit answers
+  // Submit exam
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (Object.keys(answers).length !== questions.length) {
+      setError("Please answer all questions before submitting.");
+      return;
+    }
 
     const formattedAnswers = Object.entries(answers).map(
       ([questionId, selectedOption]) => ({
@@ -65,10 +70,10 @@ const StudentAttendExamPage = () => {
         answers: formattedAnswers,
       });
       alert("Answers submitted successfully!");
-      navigate("/dashboard/student/scores");
+      navigate(`student/scores/${examId}`);
     } catch (err) {
       console.error(err);
-      setError("Submission failed. Make sure all questions are answered.");
+      setError("Submission failed. Please try again.");
     }
   };
 
@@ -99,9 +104,15 @@ const StudentAttendExamPage = () => {
             </Box>
           ))}
 
-          <Button type="submit" variant="contained" fullWidth>
-            Submit Answers
-          </Button>
+        <Button
+      type="submit"
+      variant="contained"
+      fullWidth
+      disabled={Object.keys(answers).length !== questions.length}
+    >
+      Submit Answers
+    </Button>
+
         </form>
       </Paper>
     </Container>

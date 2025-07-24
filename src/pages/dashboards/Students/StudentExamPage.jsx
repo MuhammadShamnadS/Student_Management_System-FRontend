@@ -1,3 +1,4 @@
+// src/pages/dashboards/Students/StudentExamsPage.jsx
 import React, { useEffect, useState } from "react";
 import {
   Container, Typography, CircularProgress, Card, CardContent, Button, Grid, Alert
@@ -7,27 +8,60 @@ import { useNavigate } from "react-router-dom";
 
 const StudentExamsPage = () => {
   const [exams, setExams] = useState([]);
+  const [submittedMap, setSubmittedMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  //  Load all eligible exams
   useEffect(() => {
-    axios.get("/api/exams")
-      .then(res => setExams(res.data.results || []))
-      .catch(() => setError("Failed to load exams"))
-      .finally(() => setLoading(false));
+    const fetchExams = async () => {
+      try {
+        const res = await axios.get("/api/exams");
+        const examsData = res.data.results || [];
+
+
+        setExams(examsData);
+
+        // Fetch submission status for each exam
+        const statusPromises = examsData.map((exam) =>
+          axios
+            .get(`/api/submissions/check/${exam.id}`)
+            .then((res) => ({ id: exam.id, submitted: res.data.submitted }))
+            .catch(() => ({ id: exam.id, submitted: false }))
+        );
+
+        const results = await Promise.all(statusPromises);
+        const map = {};
+        results.forEach((r) => (map[r.id] = r.submitted));
+        setSubmittedMap(map);
+      } catch (err) {
+        setError("Failed to load exams.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExams();
   }, []);
 
   const now = new Date();
 
-  const canAttend = (exam) => {
+  // 2. Compute status label
+  const getExamStatus = (exam) => {
     const start = new Date(exam.start_time);
     const end = new Date(start.getTime() + exam.duration_minutes * 60000);
-    return now >= start && now <= end;
+    const submitted = submittedMap[exam.id];
+
+    if (submitted) return { label: "View Score", color: "success", action: "score" };
+    if (now < start) return { label: "Not Started Yet", color: "warning", disabled: true };
+    if (now > end) return { label: "Expired", color: "error", disabled: true };
+    return { label: "Attend Now", color: "primary", action: "attend" };
   };
 
-  const handleAttend = (examId) => {
-    navigate(`/dashboard/student/exams/${examId}/attend`);
+  const handleAction = (examId, type) => {
+    if (type === "attend") navigate(`/dashboard/student/exams/${examId}/attend`);
+    else if (type === "score") navigate(`/dashboard/student/scores/${result.id}`);
   };
 
   if (loading) return <CircularProgress sx={{ mt: 6 }} />;
@@ -36,37 +70,43 @@ const StudentExamsPage = () => {
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant="h5" gutterBottom>
-        Upcoming Exams
+        My Exams
       </Typography>
       <Grid container spacing={2}>
-        {exams.map((exam) => (
-          <Grid item xs={12} md={6} lg={4} key={exam.id}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">{exam.title}</Typography>
-                <Typography variant="body2">Starts: {new Date(exam.start_time).toLocaleString("en-IN", {
-  timeZone: "Asia/Kolkata",
-  hour: "2-digit",
-  minute: "2-digit",
-  year: "numeric",
-  month: "short",
-  day: "2-digit",
-  hour12: true,
-})}</Typography>
-                <Typography variant="body2">Duration: {exam.duration_minutes} minutes</Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ mt: 1 }}
-                  onClick={() => handleAttend(exam.id)}
-                  disabled={!canAttend(exam)}
-                >
-                  {canAttend(exam) ? "Attend" : "Not Available Yet"}
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+        {exams.map((exam) => {
+          const { label, color, action, disabled } = getExamStatus(exam);
+          return (
+            <Grid item xs={12} md={6} lg={4} key={exam.id}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">{exam.title}</Typography>
+                  <Typography variant="body2">
+                    Starts:{" "}
+                    {new Date(exam.start_time).toLocaleString("en-IN", {
+                      timeZone: "Asia/Kolkata",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      year: "numeric",
+                      month: "short",
+                      day: "2-digit",
+                      hour12: true,
+                    })}
+                  </Typography>
+                  <Typography variant="body2">Duration: {exam.duration_minutes} mins</Typography>
+                  <Button
+                    variant="contained"
+                    color={color}
+                    sx={{ mt: 2 }}
+                    disabled={disabled}
+                    onClick={() => handleAction(exam.id, action)}
+                  >
+                    {label}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
       </Grid>
     </Container>
   );

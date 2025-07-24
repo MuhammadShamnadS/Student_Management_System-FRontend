@@ -34,6 +34,7 @@ import TeacherEditExamPage from "../pages/dashboards/Teachers/TeacherEditExamPag
 import StudentExamsPage from "../pages/dashboards/Students/StudentExamPage";
 import StudentScoresPage from "../pages/dashboards/Students/StudentScorePage";
 import StudentAttendExamPage from "../pages/dashboards/Students/StudentAttendExamPage";
+import StudentExamDetailPage from "../pages/dashboards/Students/StudentExamDetailPage";
 
 
 
@@ -82,10 +83,11 @@ const routes = [
           { path: "students/myexam", element: <RequireAuth allowedRoles={["student"]}><StudentExamsPage /></RequireAuth> },
           { path: "students/score", element: <RequireAuth allowedRoles={["student"]}><StudentScoresPage /></RequireAuth> },
           { path: "student/exams/:examId/attend", element: <RequireAuth allowedRoles={["student"]}><StudentAttendExamPage /></RequireAuth> },
-        ],
-      },
+          { path: "student/scores/:id", element: <RequireAuth allowedRoles={["student"]}><StudentExamDetailPage /></RequireAuth> },
     ],
   },
-];
+],
+  },
+]
 
 export default routes;
