@@ -37,7 +37,7 @@ const AllStudents = () => {
     try {
       const res = await axios.get(`/api/students?page=${pageNum}`);
       setStudents(res.data.results || []);
-      setCount(Math.ceil(res.data.count / 10));
+      setCount(Math.ceil(res.data.count / 5));
     } catch (err) {
       console.error("Failed to fetch students", err);
     }

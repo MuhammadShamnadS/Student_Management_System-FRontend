@@ -48,10 +48,6 @@ const StudentDashboardPage = () => {
   const attendedExamIds = new Set(results.map((r) => r.exam));
   const attendedCount = attendedExamIds.size;
   const totalExams = exams.length;
-  const averageScore =
-    results.length > 0
-      ? Math.round(results.reduce((sum, r) => sum + r.marks_obtained, 0) / results.length)
-      : 0;
 
   return (
     <Container sx={{ mt: 4 }}>
@@ -80,7 +76,6 @@ const StudentDashboardPage = () => {
             <Box mt={1}>
               <Typography><strong>Total Exams Assigned:</strong> {totalExams}</Typography>
               <Typography><strong>Exams Attended:</strong> {attendedCount}</Typography>
-              <Typography><strong>Average Score:</strong> {averageScore}%</Typography>
             </Box>
           </Paper>
         </Grid>

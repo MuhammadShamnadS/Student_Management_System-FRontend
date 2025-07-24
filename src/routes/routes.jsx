@@ -19,6 +19,7 @@ import EditTeacherForm from "../pages/TeacherEditForm";
 import EditStudentForm from "../pages/StudentEditForm";
 import AllTeachers from "../pages/dashboards/AllTeachers";
 import AllStudents from "../pages/dashboards/AllStudents";
+import AdminExamScorePage from "../pages/dashboards/AdminExamScoresPage";
 import TeacherDashboard from "../pages/dashboards/Teachers/TeacherDashboard";
 import StudentDashboardPage from "../pages/dashboards/Students/StudentDashboard";
 
@@ -35,6 +36,8 @@ import TeacherEditExamPage from "../pages/dashboards/Teachers/TeacherEditExamPag
 import StudentExamsPage from "../pages/dashboards/Students/StudentExamPage";
 import StudentScoresPage from "../pages/dashboards/Students/StudentScorePage";
 import StudentAttendExamPage from "../pages/dashboards/Students/StudentAttendExamPage";
+import StudentExamDetailPage from "../pages/dashboards/Students/StudentExamDetailPage";
+import AdminSubmissionDetailPage from "../pages/dashboards/AdminSubmissionDetailPage";
 
 
 
@@ -68,6 +71,9 @@ const routes = [
           { path: "exams/:examId/edit", element: <RequireAuth allowedRoles={["admin"]}><EditExamPage /></RequireAuth> },
           { path: "teachers/:id/edit", element: ( <RequireAuth allowedRoles={["admin"]}><EditTeacherForm /></RequireAuth>), },
           { path: "students/:id/edit", element: ( <RequireAuth allowedRoles={["admin"]}><EditStudentForm /></RequireAuth>), },
+          { path: "dashboard/admin/exam-scores", element: ( <RequireAuth allowedRoles={["admin"]}><AdminExamScorePage /></RequireAuth> ), },{ path: "admin/submission/:id", element: ( <RequireAuth allowedRoles={["admin"]}><AdminSubmissionDetailPage /></RequireAuth>), },
+          { path: "admin/submission/:id", element: ( <RequireAuth allowedRoles={["admin"]}><AdminSubmissionDetailPage /></RequireAuth>), },
+
 
 
           { path: "teacher", element: <RequireAuth allowedRoles={["teacher"]}><TeacherDashboard /></RequireAuth> },
@@ -82,5 +88,12 @@ const routes = [
           { path: "students/myexam", element: <RequireAuth allowedRoles={["student"]}><StudentExamsPage /></RequireAuth> },
           { path: "students/score", element: <RequireAuth allowedRoles={["student"]}><StudentScoresPage /></RequireAuth> },
           { path: "student/exams/:examId/attend", element: <RequireAuth allowedRoles={["student"]}><StudentAttendExamPage /></RequireAuth> },
+          { path: "student/scores/:id", element: <RequireAuth allowedRoles={["student"]}><StudentExamDetailPage /></RequireAuth> },
+    ],
+  },
+],
+  },
+]
+
 
 export default routes;

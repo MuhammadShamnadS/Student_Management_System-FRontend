@@ -1,53 +1,79 @@
+// src/pages/dashboards/Students/StudentExamScorePage.jsx
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+
 import {
-  Container, Typography, Table, TableHead, TableBody, TableRow, TableCell, CircularProgress, Alert
+  Container,
+  Typography,
+  CircularProgress,
+  Alert,
+  Paper,
+  Grid,
 } from "@mui/material";
 import axios from "../../../api/axios";
 
-const StudentScoresPage = () => {
+const StudentExamScorePage = () => {
+  const navigate = useNavigate();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    axios.get("/api/students/my_marks")
-      .then(res => setResults(res.data || []))
-      .catch(() => setError("Failed to load results"))
+    axios
+      .get("/api/submissions")
+      .then((res) => {
+        setResults(res.data.results || []);
+;
+      })
+      .catch(() => setError("Failed to fetch scores."))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <CircularProgress sx={{ mt: 4 }} />;
-  if (error) return <Alert severity="error">{error}</Alert>;
+  if (error)
+    return (
+      <Alert severity="error" sx={{ mt: 4 }}>
+        {error}
+      </Alert>
+    );
 
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant="h5" gutterBottom>
-        My Scores
+        My Exam Scores
       </Typography>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Exam Title</TableCell>
-            <TableCell>Score</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {results.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={2}>No results yet.</TableCell>
-            </TableRow>
-          ) : (
-            results.map((r, i) => (
-              <TableRow key={i}>
-                <TableCell>{r.exam_title}</TableCell>
-                <TableCell>{r.score}</TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        {results.map((result) => (
+      <Paper
+  sx={{ p: 3, cursor: "pointer" }}
+  onClick={() => navigate(`/dashboard/student/scores/${result.id}`)}
+>
+  <Typography variant="h6">
+    <strong>Exam:</strong> {result.exam_title || `Exam #${result.exam}`}
+  </Typography>
+  <Typography>
+    <strong>Score:</strong> {result.score}
+  </Typography>
+  <Typography>
+    <strong>Submitted At:</strong>{" "}
+    {new Date(result.submitted_at).toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour12: true,
+    })}
+  </Typography>
+</Paper>
+
+        ))}
+      </Grid>
     </Container>
   );
 };
 
-export default StudentScoresPage;
+export default StudentExamScorePage;

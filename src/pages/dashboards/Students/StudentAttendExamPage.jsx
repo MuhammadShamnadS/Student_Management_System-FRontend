@@ -24,7 +24,7 @@ const StudentAttendExamPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // 1. Load questions
+  // Load questions
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -40,7 +40,7 @@ const StudentAttendExamPage = () => {
     fetchQuestions();
   }, [examId]);
 
-  // 2. Handle option selection
+  // Handle answer selection
   const handleOptionChange = (questionId, selectedOption) => {
     setAnswers((prev) => ({
       ...prev,
@@ -48,29 +48,41 @@ const StudentAttendExamPage = () => {
     }));
   };
 
-  // 3. Submit answers
+  // Submit exam
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const formattedAnswers = Object.entries(answers).map(
-      ([questionId, selectedOption]) => ({
-        question: parseInt(questionId),
-        selected_option: selectedOption,
-      })
-    );
+  if (Object.keys(answers).length !== questions.length) {
+    setError("Please answer all questions before submitting.");
+    return;
+  }
 
-    try {
-      await axios.post("/api/submissions", {
-        exam: parseInt(examId),
-        answers: formattedAnswers,
-      });
-      alert("Answers submitted successfully!");
-      navigate("/dashboard/student/scores");
-    } catch (err) {
-      console.error(err);
-      setError("Submission failed. Make sure all questions are answered.");
+  const formattedAnswers = Object.entries(answers).map(
+    ([questionId, selectedOption]) => ({
+      question: parseInt(questionId),
+      selected_option: selectedOption,
+    })
+  );
+
+  try {
+    const res = await axios.post("/api/submissions", {
+      exam: parseInt(examId),
+      answers: formattedAnswers,
+    });
+
+    const submissionId = res.data?.id;
+    if (!submissionId) {
+      throw new Error("Submission ID not returned.");
     }
-  };
+
+    alert("Answers submitted successfully!");
+    navigate(`/dashboard/student/scores/${submissionId}`);
+  } catch (err) {
+    console.error(err);
+    setError("Submission failed. Please try again.");
+  }
+};
+
 
   if (loading) return <CircularProgress sx={{ mt: 4 }} />;
   if (error) return <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>;
@@ -99,9 +111,15 @@ const StudentAttendExamPage = () => {
             </Box>
           ))}
 
-          <Button type="submit" variant="contained" fullWidth>
-            Submit Answers
-          </Button>
+        <Button
+      type="submit"
+      variant="contained"
+      fullWidth
+      disabled={Object.keys(answers).length !== questions.length}
+    >
+      Submit Answers
+    </Button>
+
         </form>
       </Paper>
     </Container>
