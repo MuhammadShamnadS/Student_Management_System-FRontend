@@ -71,10 +71,8 @@ const routes = [
           { path: "exams/:examId/edit", element: <RequireAuth allowedRoles={["admin"]}><EditExamPage /></RequireAuth> },
           { path: "teachers/:id/edit", element: ( <RequireAuth allowedRoles={["admin"]}><EditTeacherForm /></RequireAuth>), },
           { path: "students/:id/edit", element: ( <RequireAuth allowedRoles={["admin"]}><EditStudentForm /></RequireAuth>), },
-          { path: "dashboard/admin/exam-scores", element: ( <RequireAuth allowedRoles={["admin"]}><AdminExamScorePage /></RequireAuth> ), },{ path: "admin/submission/:id", element: ( <RequireAuth allowedRoles={["admin"]}><AdminSubmissionDetailPage /></RequireAuth>), },
+          { path: "dashboard/admin/exam-scores", element: ( <RequireAuth allowedRoles={["admin"]}><AdminExamScorePage /></RequireAuth> ), },
           { path: "admin/submission/:id", element: ( <RequireAuth allowedRoles={["admin"]}><AdminSubmissionDetailPage /></RequireAuth>), },
-
-
 
           { path: "teacher", element: <RequireAuth allowedRoles={["teacher"]}><TeacherDashboard /></RequireAuth> },
           { path: "teacher/:teacherId/students", element: <RequireAuth allowedRoles={["admin"]}><StudentsUnderTeacher /></RequireAuth> },
