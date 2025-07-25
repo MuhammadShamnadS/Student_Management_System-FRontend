@@ -5,28 +5,70 @@ import {
   Container,
   Paper,
   Grid,
+  Avatar,
   CircularProgress,
   Alert,
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
+import SchoolIcon from "@mui/icons-material/School";
+import GroupsIcon from "@mui/icons-material/Groups";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+
+const StatCard = ({ title, value, icon, gradient }) => (
+  <Paper
+    elevation={4}
+    sx={{
+      p: 3,
+      borderRadius: 3,
+      background: gradient,
+      color: "#fff",
+      transition: "transform 0.3s",
+      "&:hover": {
+        transform: "scale(1.05)",
+      },
+    }}
+  >
+    <Box display="flex" alignItems="center" gap={2}>
+      <Box>{icon}</Box>
+      <Box>
+        <Typography variant="subtitle2" sx={{ opacity: 0.9 }}>
+          {title}
+        </Typography>
+        <Typography variant="h4" fontWeight="bold">
+          {value}
+        </Typography>
+      </Box>
+    </Box>
+  </Paper>
+);
 
 const AdminDashboard = () => {
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
+  const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [studentsRes, teachersRes] = await Promise.all([
+        const [studentsRes, teachersRes, examsRes] = await Promise.all([
           axios.get("/api/students"),
           axios.get("/api/teachers"),
+          axios.get("/api/exams"),
         ]);
         setStudents(studentsRes.data.results || []);
         setTeachers(teachersRes.data.results || []);
+        setExams(examsRes.data.results || []);
         setLoading(false);
       } catch (err) {
-        setError("Failed to load dashboard stats.");
+        setError("Failed to load dashboard data.");
         setLoading(false);
       }
     };
@@ -38,44 +80,76 @@ const AdminDashboard = () => {
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <Container>
-      <Typography variant="h4" sx={{ mt: 4, mb: 2 }}>
-        Welcome, Admin
-      </Typography>
+    <Container sx={{ mt: 5 }}>
+      {/* Admin Profile Header */}
+      <Box display="flex" alignItems="center" gap={2} mb={4}>
+        <Avatar sx={{ bgcolor: "#1976d2", width: 56, height: 56 }}>A</Avatar>
+        <Box>
+          <Typography variant="h5" fontWeight="bold">
+            Welcome back, Admin
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            You have full control over the school system.
+          </Typography>
+        </Box>
+      </Box>
 
-      <Typography variant="body1" sx={{ mb: 4 }}>
-        Use the sidebar to manage teachers, students, and user registration.
-      </Typography>
-
+      {/* Statistics Cards */}
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
-          <Paper
-            elevation={3}
-            sx={{
-              p: 3,
-              bgcolor: "#f0f4ff",
-              borderLeft: "5px solid #1976d2",
-            }}
-          >
-            <Typography variant="subtitle1">Total Teachers</Typography>
-            <Typography variant="h3">{teachers.length}</Typography>
-          </Paper>
+        <Grid item xs={12} md={4}>
+          <StatCard
+            title="Total Teachers"
+            value={teachers.length}
+            icon={<SchoolIcon sx={{ fontSize: 40 }} />}
+            gradient="linear-gradient(to right, #1976d2, #42a5f5)"
+          />
         </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <Paper
-            elevation={3}
-            sx={{
-              p: 3,
-              bgcolor: "#fff7f0",
-              borderLeft: "5px solid #ff9800",
-            }}
-          >
-            <Typography variant="subtitle1">Total Students</Typography>
-            <Typography variant="h3">{students.length}</Typography>
-          </Paper>
+        <Grid item xs={12} md={4}>
+          <StatCard
+            title="Total Students"
+            value={students.length}
+            icon={<GroupsIcon sx={{ fontSize: 40 }} />}
+            gradient="linear-gradient(to right, #2e7d32, #66bb6a)"
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <StatCard
+            title="Total Exams"
+            value={exams.length}
+            icon={<AssignmentIcon sx={{ fontSize: 40 }} />}
+            gradient="linear-gradient(to right, #8e24aa, #ba68c8)"
+          />
         </Grid>
       </Grid>
+
+      {/* Summary Section */}
+      <Box mt={5}>
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          System Summary
+        </Typography>
+        <Paper sx={{ p: 2, borderRadius: 2 }}>
+          <List dense>
+            <ListItem>
+              <ListItemIcon>
+                <CheckCircleIcon color="success" />
+              </ListItemIcon>
+              <ListItemText primary="All systems are operational." />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <AccessTimeIcon color="warning" />
+              </ListItemIcon>
+              <ListItemText primary="No pending registrations at the moment." />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <AssignmentIcon color="info" />
+              </ListItemIcon>
+              <ListItemText primary="You can manage exams and results using the sidebar." />
+            </ListItem>
+          </List>
+        </Paper>
+      </Box>
     </Container>
   );
 };

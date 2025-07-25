@@ -20,10 +20,13 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
+  Tooltip,
+  useMediaQuery
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { Edit, Delete } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
+import { Edit, Delete, School, PersonAddAlt } from "@mui/icons-material";
 import EditStudentForm from "../StudentEditForm";
+import { useNavigate } from "react-router-dom";
 
 const AllStudents = () => {
   const [students, setStudents] = useState([]);
@@ -32,6 +35,8 @@ const AllStudents = () => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const fetchStudents = async (pageNum = 1) => {
     try {
@@ -47,13 +52,7 @@ const AllStudents = () => {
     fetchStudents(page);
   }, [page]);
 
-  const handlePageChange = (_, value) => {
-    setPage(value);
-  };
-
-  const handleStudentClick = (student) => {
-    setSelectedStudent(student);
-  };
+  const handlePageChange = (_, value) => setPage(value);
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this student?")) {
@@ -68,60 +67,65 @@ const AllStudents = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 6 }}>
+      {/* Header */}
       <Box
         display="flex"
+        flexDirection={isMobile ? "column" : "row"}
         justifyContent="space-between"
         alignItems="center"
         mb={3}
-        px={2}
-        py={2}
-        borderRadius={2}
-        boxShadow={2}
-        bgcolor="#f0f4f8"
+        gap={2}
+        p={2}
+        borderRadius={3}
+        boxShadow={3}
+        bgcolor="#f0f4ff"
       >
-        <Typography variant="h5" fontWeight="bold">
+        <Typography variant="h4" fontWeight="bold" display="flex" alignItems="center" gap={1}>
+          <School color="primary" />
           All Students
         </Typography>
+
         <Button
           variant="contained"
+          startIcon={<PersonAddAlt />}
           onClick={() => navigate("/dashboard/register/student")}
+          sx={{ borderRadius: 2 }}
         >
           Register Student
         </Button>
       </Box>
 
-      <Paper elevation={3} sx={{ borderRadius: 3, p: 2 }}>
-        <Table>
+      {/* Table */}
+      <Paper elevation={4} sx={{ borderRadius: 3, p: 2, overflowX: "auto" }}>
+        <Table size={isMobile ? "small" : "medium"}>
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+            <TableRow sx={{ backgroundColor: "#f9f9f9" }}>
               <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Class</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Roll No.</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }} align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {students.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
-                  No students found.
-                </TableCell>
+                <TableCell colSpan={6} align="center">No students found.</TableCell>
               </TableRow>
             ) : (
               students.map((student) => (
                 <TableRow
                   key={student.id}
                   hover
-                  onClick={() => handleStudentClick(student)}
                   sx={{
                     cursor: "pointer",
-                    transition: "background-color 0.2s",
                     "&:hover": {
-                      backgroundColor: "#f9f9f9",
+                      backgroundColor: "#f5faff",
                     },
                   }}
+                  onClick={() => setSelectedStudent(student)}
                 >
                   <TableCell>
                     {student.user.first_name} {student.user.last_name}
@@ -134,7 +138,31 @@ const AllStudents = () => {
                       label={student.status}
                       color={student.status === "active" ? "success" : "default"}
                       size="small"
+                      variant="outlined"
                     />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Stack direction="row" spacing={1} justifyContent="center">
+                      <Tooltip title="Edit">
+                        <IconButton onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedStudent(student);
+                          setShowEditForm(true);
+                        }}>
+                          <Edit color="primary" fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete">
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(student.id);
+                          }}
+                        >
+                          <Delete color="error" fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))
@@ -143,6 +171,7 @@ const AllStudents = () => {
         </Table>
       </Paper>
 
+      {/* Pagination */}
       <Box display="flex" justifyContent="center" mt={3}>
         <Pagination
           count={count}
@@ -150,18 +179,23 @@ const AllStudents = () => {
           onChange={handlePageChange}
           color="primary"
           shape="rounded"
+          siblingCount={isMobile ? 0 : 1}
+          size={isMobile ? "small" : "medium"}
+          showFirstButton={!isMobile}
+          showLastButton={!isMobile}
         />
       </Box>
 
-      {selectedStudent && (
+      {/* View Dialog */}
+      {selectedStudent && !showEditForm && (
         <Dialog
-          open={Boolean(selectedStudent)}
+          open
           onClose={() => setSelectedStudent(null)}
           fullWidth
           maxWidth="sm"
         >
-          <DialogTitle>Student Details</DialogTitle>
-          <DialogContent>
+          <DialogTitle fontWeight="bold">Student Details</DialogTitle>
+          <DialogContent dividers>
             <Box my={1}><strong>Name:</strong> {selectedStudent.user.first_name} {selectedStudent.user.last_name}</Box>
             <Box my={1}><strong>Email:</strong> {selectedStudent.user.email}</Box>
             <Box my={1}><strong>Username:</strong> {selectedStudent.user.username}</Box>
@@ -173,20 +207,10 @@ const AllStudents = () => {
             <Box my={1}><strong>Admission Date:</strong> {selectedStudent.admission_date}</Box>
           </DialogContent>
           <DialogActions>
-            <Button
-              startIcon={<Delete />}
-              color="error"
-              onClick={() => handleDelete(selectedStudent.id)}
-            >
+            <Button color="error" startIcon={<Delete />} onClick={() => handleDelete(selectedStudent.id)}>
               Delete
             </Button>
-            <Button
-              startIcon={<Edit />}
-              onClick={() => {
-                setShowEditForm(true);
-              }}
-              variant="contained"
-            >
+            <Button variant="contained" startIcon={<Edit />} onClick={() => setShowEditForm(true)}>
               Edit
             </Button>
             <Button onClick={() => setSelectedStudent(null)}>Close</Button>
@@ -194,11 +218,13 @@ const AllStudents = () => {
         </Dialog>
       )}
 
+      {/* Edit Form */}
       {showEditForm && selectedStudent && (
         <EditStudentForm
           studentId={selectedStudent.id}
           onClose={() => {
             setShowEditForm(false);
+            setSelectedStudent(null);
             fetchStudents(page);
           }}
           onUpdate={() => fetchStudents(page)}

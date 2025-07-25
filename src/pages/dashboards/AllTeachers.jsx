@@ -1,4 +1,3 @@
-// src/pages/dashboards/Teachers/AllTeachers.jsx
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -17,11 +16,16 @@ import {
   Chip,
   useMediaQuery,
   IconButton,
+  Tooltip,
+  Stack,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
+import { Link } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import PersonIcon from "@mui/icons-material/Person";
+import GroupIcon from "@mui/icons-material/Group";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import axios from "../../api/axios";
 
 const AllTeachers = () => {
@@ -66,50 +70,87 @@ const AllTeachers = () => {
     fetchTeachers();
   }, [page]);
 
-  if (loading)
+  if (loading) {
     return (
       <Box display="flex" justifyContent="center" mt={6}>
         <CircularProgress />
       </Box>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
       <Alert severity="error" sx={{ mt: 4, mx: "auto", maxWidth: 600 }}>
         {error}
       </Alert>
     );
+  }
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 6 }}>
       {/* Header */}
       <Box
-        display="flex"
-        flexDirection={isMobile ? "column" : "row"}
-        justifyContent="space-between"
-        alignItems={isMobile ? "stretch" : "center"}
-        gap={2}
-        mb={3}
+        sx={{
+          background: "linear-gradient(to right, #1976d2, #42a5f5)",
+          color: "#fff",
+          borderRadius: 3,
+          p: 3,
+          mb: 4,
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          justifyContent: "space-between",
+          alignItems: isMobile ? "flex-start" : "center",
+          gap: 2,
+          boxShadow: 3,
+        }}
       >
-        <Typography variant="h5" fontWeight="bold">
+        <Typography variant="h5" display="flex" alignItems="center" gap={1}>
+          <PersonIcon fontSize="large" />
           All Teachers
         </Typography>
-        <Button variant="contained" component={Link} to="/dashboard/register/teacher">
-          Register Teacher
+        <Button
+          variant="contained"
+          startIcon={<AddCircleOutlineIcon />}
+          component={Link}
+          to="/dashboard/register/teacher"
+          sx={{
+            backgroundColor: "#fff",
+            color: "#1976d2",
+            "&:hover": {
+              backgroundColor: "#e3f2fd",
+            },
+            fontWeight: 600,
+          }}
+        >
+          Register New Teacher
         </Button>
       </Box>
 
       {/* Table */}
-      <Paper elevation={3} sx={{ p: 2, borderRadius: 3, overflowX: "auto" }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 2,
+          borderRadius: 3,
+          boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
+          overflowX: "auto",
+        }}
+      >
         <Table size={isMobile ? "small" : "medium"}>
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+            <TableRow
+              sx={{
+                backgroundColor: "#f1f5fb",
+              }}
+            >
               <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
               {!isMobile && <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>}
               <TableCell sx={{ fontWeight: "bold" }}>Phone</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Subject</TableCell>
               {!isMobile && <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>}
-              <TableCell sx={{ fontWeight: "bold" }}>Actions</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }} align="center">
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -133,37 +174,46 @@ const AllTeachers = () => {
                       <Chip
                         label={teacher.status}
                         size="small"
+                        variant="outlined"
                         color={teacher.status === "active" ? "success" : "default"}
                       />
                     </TableCell>
                   )}
-                  <TableCell>
-                    <Box display="flex" gap={1}>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        component={Link}
-                        to={`/dashboard/teacher/${teacher.id}/students`}
-                      >
-                        View Students
-                      </Button>
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        component={Link}
-                        to={`/dashboard/teachers/${teacher.id}/edit`}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleDelete(teacher.id)}
-                        disabled={deletingId === teacher.id}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
+                  <TableCell align="center">
+                    <Stack direction="row" spacing={1} justifyContent="center">
+                      <Tooltip title="View Students">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          component={Link}
+                          to={`/dashboard/teacher/${teacher.id}/students`}
+                        >
+                          <GroupIcon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Edit">
+                        <IconButton
+                          size="small"
+                          color="secondary"
+                          component={Link}
+                          to={`/dashboard/teachers/${teacher.id}/edit`}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Delete">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => handleDelete(teacher.id)}
+                          disabled={deletingId === teacher.id}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))
@@ -174,15 +224,16 @@ const AllTeachers = () => {
 
       {/* Pagination */}
       {count > 1 && (
-        <Box display="flex" justifyContent="center" mt={3}>
+        <Box display="flex" justifyContent="center" mt={4}>
           <Pagination
             count={count}
             page={page}
             onChange={(_, val) => setPage(val)}
             color="primary"
             shape="rounded"
-            siblingCount={isMobile ? 0 : 1}
             size={isMobile ? "small" : "medium"}
+            showFirstButton
+            showLastButton
           />
         </Box>
       )}
