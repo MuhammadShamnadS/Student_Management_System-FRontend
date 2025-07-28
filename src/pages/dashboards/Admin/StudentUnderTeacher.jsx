@@ -26,7 +26,7 @@ import {
   Person as PersonIcon,
   Badge as BadgeIcon,
 } from "@mui/icons-material";
-import axios from "../../api/axios";
+import axios from "../../../api/axios";
 import { useParams, useNavigate } from "react-router-dom";
 
 const StudentsUnderTeacher = () => {

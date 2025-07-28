@@ -4,7 +4,7 @@ import {
   Button, Grid, Box, Chip
 } from "@mui/material";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import axios from "../../api/axios";
+import axios from "../../../api/axios";
 import PersonIcon from "@mui/icons-material/Person";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ScoreIcon from "@mui/icons-material/Score";

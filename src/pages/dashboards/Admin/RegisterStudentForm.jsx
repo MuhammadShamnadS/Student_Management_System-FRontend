@@ -16,7 +16,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import axios from "../api/axios";
+import axios from "../../../api/axios";
 
 const StudentRegisterForm = () => {
   const navigate = useNavigate();

@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "../api/axios";
+import axios from "../../../api/axios";
 
 const ResetPasswordPage = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
