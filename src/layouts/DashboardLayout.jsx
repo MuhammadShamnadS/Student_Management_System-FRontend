@@ -44,6 +44,7 @@ const DashboardLayout = () => {
       { label: "My Students", path: "/dashboard/teachers/student"},
       { label: "Create Exam", path: "teacher/exams/create" },
       { label: "Manage Exams", path: "/dashboard/teachers/exams" },
+      { label: "Exam Submisions", path: "teachers/exams-scores"}
 
     ],
     student: [

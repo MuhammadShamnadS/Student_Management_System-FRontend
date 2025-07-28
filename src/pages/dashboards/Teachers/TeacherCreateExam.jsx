@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 const TeacherCreateExamPage = () => {
   const [form, setForm] = useState({
     title: "",
-    target_class: "", // <-- Required for teachers
+    target_class: "", 
     start_time: "",
     duration_minutes: 5,
   });
