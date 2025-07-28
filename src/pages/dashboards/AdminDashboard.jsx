@@ -48,6 +48,20 @@ const StatCard = ({ title, value, icon, gradient }) => (
   </Paper>
 );
 
+// Helper to recursively fetch all paginated data
+const fetchAllPages = async (initialUrl) => {
+  let results = [];
+  let nextUrl = initialUrl;
+
+  while (nextUrl) {
+    const res = await axios.get(nextUrl);
+    results = [...results, ...res.data.results];
+    nextUrl = res.data.next;
+  }
+
+  return results;
+};
+
 const AdminDashboard = () => {
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
@@ -58,16 +72,17 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [studentsRes, teachersRes, examsRes] = await Promise.all([
-          axios.get("/api/students"),
-          axios.get("/api/teachers"),
-          axios.get("/api/exams"),
+        const [studentsData, teachersData, examsData] = await Promise.all([
+          fetchAllPages("/api/students"),
+          fetchAllPages("/api/teachers"),
+          fetchAllPages("/api/exams"),
         ]);
-        setStudents(studentsRes.data.results || []);
-        setTeachers(teachersRes.data.results || []);
-        setExams(examsRes.data.results || []);
+        setStudents(studentsData);
+        setTeachers(teachersData);
+        setExams(examsData);
         setLoading(false);
       } catch (err) {
+        console.error(err);
         setError("Failed to load dashboard data.");
         setLoading(false);
       }

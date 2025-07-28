@@ -1,4 +1,5 @@
-// src/pages/dashboards/Students/AllStudents.jsx
+// AllStudents.jsx
+
 import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import {
@@ -18,13 +19,26 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   IconButton,
   Tooltip,
-  useMediaQuery
+  useMediaQuery,
+  Divider,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Edit, Delete, School, PersonAddAlt } from "@mui/icons-material";
+import {
+  Edit,
+  Delete,
+  School,
+  PersonAddAlt,
+  Visibility,
+  Email,
+  Phone,
+  Class,
+  Badge,
+  Cake,
+  CalendarMonth,
+  AccountCircle,
+} from "@mui/icons-material";
 import EditStudentForm from "../StudentEditForm";
 import { useNavigate } from "react-router-dom";
 
@@ -116,20 +130,8 @@ const AllStudents = () => {
               </TableRow>
             ) : (
               students.map((student) => (
-                <TableRow
-                  key={student.id}
-                  hover
-                  sx={{
-                    cursor: "pointer",
-                    "&:hover": {
-                      backgroundColor: "#f5faff",
-                    },
-                  }}
-                  onClick={() => setSelectedStudent(student)}
-                >
-                  <TableCell>
-                    {student.user.first_name} {student.user.last_name}
-                  </TableCell>
+                <TableRow key={student.id} hover>
+                  <TableCell>{student.user.first_name} {student.user.last_name}</TableCell>
                   <TableCell>{student.user.email}</TableCell>
                   <TableCell>{student.student_class}</TableCell>
                   <TableCell>{student.roll_number}</TableCell>
@@ -143,9 +145,13 @@ const AllStudents = () => {
                   </TableCell>
                   <TableCell align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
+                      <Tooltip title="View Details">
+                        <IconButton onClick={() => setSelectedStudent(student)}>
+                          <Visibility color="action" fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
                       <Tooltip title="Edit">
-                        <IconButton onClick={(e) => {
-                          e.stopPropagation();
+                        <IconButton onClick={() => {
                           setSelectedStudent(student);
                           setShowEditForm(true);
                         }}>
@@ -153,12 +159,7 @@ const AllStudents = () => {
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Delete">
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(student.id);
-                          }}
-                        >
+                        <IconButton onClick={() => handleDelete(student.id)}>
                           <Delete color="error" fontSize="small" />
                         </IconButton>
                       </Tooltip>
@@ -186,7 +187,7 @@ const AllStudents = () => {
         />
       </Box>
 
-      {/* View Dialog */}
+      {/* View Student Dialog */}
       {selectedStudent && !showEditForm && (
         <Dialog
           open
@@ -194,27 +195,53 @@ const AllStudents = () => {
           fullWidth
           maxWidth="sm"
         >
-          <DialogTitle fontWeight="bold">Student Details</DialogTitle>
+          <DialogTitle fontWeight="bold">Student Profile</DialogTitle>
           <DialogContent dividers>
-            <Box my={1}><strong>Name:</strong> {selectedStudent.user.first_name} {selectedStudent.user.last_name}</Box>
-            <Box my={1}><strong>Email:</strong> {selectedStudent.user.email}</Box>
-            <Box my={1}><strong>Username:</strong> {selectedStudent.user.username}</Box>
-            <Box my={1}><strong>Phone:</strong> {selectedStudent.phone}</Box>
-            <Box my={1}><strong>Class:</strong> {selectedStudent.student_class}</Box>
-            <Box my={1}><strong>Roll Number:</strong> {selectedStudent.roll_number}</Box>
-            <Box my={1}><strong>Status:</strong> {selectedStudent.status}</Box>
-            <Box my={1}><strong>Date of Birth:</strong> {selectedStudent.date_of_birth}</Box>
-            <Box my={1}><strong>Admission Date:</strong> {selectedStudent.admission_date}</Box>
+            <Box display="grid" gridTemplateColumns="1fr" gap={1.5}>
+              <Divider />
+              <Box display="flex" alignItems="center" gap={1}>
+                <AccountCircle color="primary" />
+                <Typography variant="body1" fontWeight="medium">
+                  {selectedStudent.user.first_name} {selectedStudent.user.last_name}
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Email color="action" />
+                <Typography variant="body2">{selectedStudent.user.email}</Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Phone color="action" />
+                <Typography variant="body2">{selectedStudent.phone}</Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Class color="action" />
+                <Typography variant="body2">Class: {selectedStudent.student_class}</Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Badge color="action" />
+                <Typography variant="body2">Roll No: {selectedStudent.roll_number}</Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Chip
+                  label={selectedStudent.status}
+                  color={selectedStudent.status === "active" ? "success" : "default"}
+                  size="small"
+                />
+              </Box>
+              <Divider />
+              <Box display="flex" alignItems="center" gap={1}>
+                <Cake fontSize="small" />
+                <Typography variant="body2">DOB: {selectedStudent.date_of_birth}</Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <CalendarMonth fontSize="small" />
+                <Typography variant="body2">Admission Date: {selectedStudent.admission_date}</Typography>
+              </Box>
+            </Box>
           </DialogContent>
-          <DialogActions>
-            <Button color="error" startIcon={<Delete />} onClick={() => handleDelete(selectedStudent.id)}>
-              Delete
-            </Button>
-            <Button variant="contained" startIcon={<Edit />} onClick={() => setShowEditForm(true)}>
-              Edit
-            </Button>
-            <Button onClick={() => setSelectedStudent(null)}>Close</Button>
-          </DialogActions>
+          <Box display="flex" justifyContent="flex-end" p={2}>
+            <Button variant="outlined" onClick={() => setSelectedStudent(null)}>Close</Button>
+          </Box>
         </Dialog>
       )}
 

@@ -39,13 +39,13 @@ const AllTeachers = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const fetchTeachers = async () => {
+  const fetchTeachers = async (pageNum = 1) => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get(`/api/teachers?page=${page}`);
+      const res = await axios.get(`/api/teachers?page=${pageNum}`);
       setTeachers(res.data.results || []);
-      setCount(Math.ceil(res.data.count / 10));
+      setCount(Math.ceil(res.data.count / 5));
     } catch (err) {
       setError("Failed to fetch teachers");
     } finally {
@@ -67,7 +67,7 @@ const AllTeachers = () => {
   };
 
   useEffect(() => {
-    fetchTeachers();
+    fetchTeachers(page);
   }, [page]);
 
   if (loading) {

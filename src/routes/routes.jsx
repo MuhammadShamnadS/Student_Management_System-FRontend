@@ -33,6 +33,7 @@ import TeacherCreateExamPage from "../pages/dashboards/Teachers/TeacherCreateExa
 import TeacherExamQuestionsPage from "../pages/dashboards/Teachers/TeacherExamQuestionsPage";
 import TeacherExamListPage from "../pages/dashboards/Teachers/TeacherExamListPage";
 import TeacherEditExamPage from "../pages/dashboards/Teachers/TeacherEditExamPage";
+import TeacherExamScorePage from "../pages/dashboards/Teachers/TeacherViewResults";
 import StudentExamsPage from "../pages/dashboards/Students/StudentExamPage";
 import StudentScoresPage from "../pages/dashboards/Students/StudentScorePage";
 import StudentAttendExamPage from "../pages/dashboards/Students/StudentAttendExamPage";
@@ -49,7 +50,7 @@ const routes = [
       { path: "/login", element: <LoginPage /> },
       { path: "/forgot-password", element: <ForgotPasswordPage /> },
       { path: "/reset-password", element: <ResetPasswordPage /> },
-      { path: "/register", element: <Navigate to="/dashboard/register" replace /> }, // redirect to nested
+      { path: "/register", element: <Navigate to="/dashboard/register" replace /> }, 
     ],
   },
   {
@@ -81,6 +82,7 @@ const routes = [
           { path: "teachers/exams", element: <RequireAuth allowedRoles={["teacher"]}><TeacherExamListPage /></RequireAuth> },
           { path: "teachers/exams/:examId/questions", element: <RequireAuth allowedRoles={["teacher"]}><TeacherExamQuestionsPage /></RequireAuth> },
           { path: "teachers/exams/:examId/edit", element: <RequireAuth allowedRoles={["teacher"]}><TeacherEditExamPage /></RequireAuth> },
+           { path: "teachers/exams-scores", element: <RequireAuth allowedRoles={["teacher"]}><TeacherExamScorePage /></RequireAuth> },
 
           { path: "student", element: <RequireAuth allowedRoles={["student"]}><StudentDashboardPage /></RequireAuth> },
           { path: "students/myexam", element: <RequireAuth allowedRoles={["student"]}><StudentExamsPage /></RequireAuth> },
