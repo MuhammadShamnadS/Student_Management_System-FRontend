@@ -8,37 +8,40 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import RequireAuth from "../components/RequireAuth";
 
 import LoginPage from "../pages/LoginPage";
-import ForgotPasswordPage from "../pages/ForgetPasswordpage";
-import ResetPasswordPage from "../pages/ResetPasswordPage";
+import ForgotPasswordPage from "../pages/dashboards/Password/ForgetPasswordpage";
+import ResetPasswordPage from "../pages/dashboards/Password/ResetPasswordPage";
 
 
 import DashboardRouter from "../pages/dashboards/DashboardRouter";
-import StudentRegisterForm from "../pages/RegisterStudentForm";
-import TeacherRegisterForm from "../pages/RegisterTeacherForm";
-import EditTeacherForm from "../pages/TeacherEditForm";
-import EditStudentForm from "../pages/StudentEditForm";
-import AllTeachers from "../pages/dashboards/AllTeachers";
-import AllStudents from "../pages/dashboards/AllStudents";
-import AdminExamScorePage from "../pages/dashboards/AdminExamScoresPage";
+import StudentRegisterForm from "../pages/dashboards/Admin/RegisterStudentForm";
+import TeacherRegisterForm from "../pages/dashboards/Admin/RegisterTeacherForm";
+import EditTeacherForm from "../pages/dashboards/Admin/TeacherEditForm";
+import EditStudentForm from "../pages/dashboards/Admin/StudentEditForm";
+import AllTeachers from "../pages/dashboards/Admin/AllTeachers";
+import AllStudents from "../pages/dashboards/Admin/AllStudents";
+import AdminExamScorePage from "../pages/dashboards/Admin/AdminExamScoresPage";
 import TeacherDashboard from "../pages/dashboards/Teachers/TeacherDashboard";
 import StudentDashboardPage from "../pages/dashboards/Students/StudentDashboard";
+import StudentsUnderTeacher from "../pages/dashboards/Admin/StudentUnderTeacher";
+import AdminSubmissionDetailPage from "../pages/dashboards/Admin/AdminSubmissionDetailPage";
 
-import StudentsUnderTeacher from "../pages/dashboards/StudentUnderTeacher";
 import CreateExamPage from "../pages/dashboards/Exams/CreateExamPage";
 import ExamListPage from "../pages/dashboards/Exams/ExamListPage";
 import ExamQuestionsPage from "../pages/dashboards/Exams/ExamQuestionsPage";
 import EditExamPage from "../pages/dashboards/Exams/EditExamPage";
+
 import MyStudents from "../pages/dashboards/Teachers/TeacherViewStudents";
 import TeacherCreateExamPage from "../pages/dashboards/Teachers/TeacherCreateExam";
 import TeacherExamQuestionsPage from "../pages/dashboards/Teachers/TeacherExamQuestionsPage";
 import TeacherExamListPage from "../pages/dashboards/Teachers/TeacherExamListPage";
 import TeacherEditExamPage from "../pages/dashboards/Teachers/TeacherEditExamPage";
 import TeacherExamScorePage from "../pages/dashboards/Teachers/TeacherViewResults";
+
 import StudentExamsPage from "../pages/dashboards/Students/StudentExamPage";
 import StudentScoresPage from "../pages/dashboards/Students/StudentScorePage";
 import StudentAttendExamPage from "../pages/dashboards/Students/StudentAttendExamPage";
 import StudentExamDetailPage from "../pages/dashboards/Students/StudentExamDetailPage";
-import AdminSubmissionDetailPage from "../pages/dashboards/AdminSubmissionDetailPage";
+
 
 
 
