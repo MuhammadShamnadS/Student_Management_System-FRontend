@@ -1,7 +1,7 @@
 // AllStudents.jsx
 
 import React, { useEffect, useState } from "react";
-import axios from "../../api/axios";
+import axios from "../../../api/axios";
 import {
   Container,
   Typography,
@@ -39,7 +39,7 @@ import {
   CalendarMonth,
   AccountCircle,
 } from "@mui/icons-material";
-import EditStudentForm from "../StudentEditForm";
+import EditStudentForm from "../../StudentEditForm";
 import { useNavigate } from "react-router-dom";
 
 const AllStudents = () => {

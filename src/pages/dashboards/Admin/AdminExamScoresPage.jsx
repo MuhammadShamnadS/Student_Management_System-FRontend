@@ -33,7 +33,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import ClassIcon from "@mui/icons-material/Class";
 import PersonIcon from "@mui/icons-material/Person";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import axios from "../../api/axios";
+import axios from "../../../api/axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const AdminExamScorePage = () => {

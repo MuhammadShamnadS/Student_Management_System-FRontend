@@ -10,7 +10,7 @@ import {
   Box,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import axios from "../api/axios";
+import axios from "../../../api/axios";
 import { useNavigate } from "react-router-dom";
 
 const ForgotPasswordPage = () => {

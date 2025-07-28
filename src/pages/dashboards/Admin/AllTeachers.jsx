@@ -26,7 +26,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import axios from "../../api/axios";
+import axios from "../../../api/axios";
 
 const AllTeachers = () => {
   const [teachers, setTeachers] = useState([]);
