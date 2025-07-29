@@ -1,4 +1,3 @@
-// src/pages/dashboards/Teachers/TeacherRegisterForm.jsx
 import React, { useState } from "react";
 import {
   Container,
@@ -12,8 +11,10 @@ import {
   Alert,
   Paper,
   Box,
+  Stack,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import DownloadIcon from "@mui/icons-material/Download";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "../../../api/axios";
@@ -35,7 +36,6 @@ const TeacherRegisterForm = () => {
     let flatErrors = {};
     for (const [key, value] of Object.entries(errors)) {
       const fullKey = parentKey ? `${parentKey}.${key}` : key;
-
       if (Array.isArray(value)) {
         flatErrors[fullKey] = value.join(" ");
       } else if (typeof value === "object" && value !== null) {
@@ -45,6 +45,7 @@ const TeacherRegisterForm = () => {
     return flatErrors;
   };
 
+  // ✅ Register Teacher API Call
   const onSubmit = async (data) => {
     setError("");
     setSuccess("");
@@ -64,22 +65,16 @@ const TeacherRegisterForm = () => {
       assigned_class: `${data.assigned_class}-${data.division}`,
     };
 
-    console.log("Submitting teacher payload:", payload);
-
     try {
       await axios.post("/api/teachers", payload);
-      setSuccess("Teacher registered successfully!");
+      setSuccess("✅ Teacher registered successfully!");
       reset();
     } catch (err) {
-      console.error("Error response:", err.response?.data);
       const errorData = err.response?.data;
-
       if (typeof errorData === "object" && errorData !== null) {
         const flatErrors = flattenErrors(errorData);
-
         for (const [field, message] of Object.entries(flatErrors)) {
           const formField = field.includes("user.") ? field.split(".")[1] : field;
-
           if (formField in data) {
             setFieldError(formField, { type: "manual", message });
           } else {
@@ -87,28 +82,55 @@ const TeacherRegisterForm = () => {
           }
         }
       } else {
-        setError("Registration failed.");
+        setError("❌ Registration failed.");
       }
     }
   };
-
   return (
-    <Container maxWidth="sm">
-      <Paper elevation={3} sx={{ p: 4, mt: 8 }}>
-        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/dashboard/teachers")}>
-          Back
-        </Button>
+    <Container maxWidth="sm" sx={{ mt: 6 }}>
+      <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
+        {/* 🔹 Header Bar */}
+        <Box
+          sx={{
+            background: "linear-gradient(to right, #1976d2, #42a5f5)",
+            borderRadius: 2,
+            p: 2,
+            mb: 3,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            color: "#fff",
+          }}
+        >
+          <Typography variant="h6">Register Teacher</Typography>
+          <Stack direction="row" spacing={2}>
+            
+            <Button
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate("/dashboard/teachers")}
+              variant="outlined"
+              sx={{
+                backgroundColor: "#fff",
+                color: "#1976d2",
+                "&:hover": { backgroundColor: "#e3f2fd" },
+                fontWeight: 600,
+              }}
+            >
+              Back
+            </Button>
+          </Stack>
+        </Box>
 
-        <Typography variant="h5" gutterBottom>Register Teacher</Typography>
+        {/* 🔹 Alerts */}
+        {error && <Alert severity="error" sx={{ mb: 2, whiteSpace: "pre-line" }}>{error}</Alert>}
+        {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-        {error && <Alert severity="error" sx={{ mt: 2, whiteSpace: 'pre-line' }}>{error}</Alert>}
-        {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
-
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 2 }}>
+        {/* 🔹 Teacher Registration Form */}
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
           <TextField fullWidth label="Username" margin="normal" {...register("username", { required: "Username is required" })} error={!!errors.username} helperText={errors.username?.message} />
           <TextField fullWidth label="Email" margin="normal" {...register("email", { required: "Email is required" })} error={!!errors.email} helperText={errors.email?.message} />
           <TextField fullWidth label="First Name" margin="normal" {...register("first_name", { required: "First name is required" })} error={!!errors.first_name} helperText={errors.first_name?.message} />
-          <TextField fullWidth label="Last Name" margin="normal" {...register("last_name") } error={!!errors.last_name} helperText={errors.last_name?.message} />
+          <TextField fullWidth label="Last Name" margin="normal" {...register("last_name")} error={!!errors.last_name} helperText={errors.last_name?.message} />
           <TextField fullWidth label="Password" type="password" margin="normal" {...register("password", { required: "Password is required" })} error={!!errors.password} helperText={errors.password?.message} />
           <TextField fullWidth label="Phone" margin="normal" {...register("phone", { required: "Phone is required" })} error={!!errors.phone} helperText={errors.phone?.message} />
           <TextField fullWidth label="Subject Specialization" margin="normal" {...register("subject_specialization", { required: "Subject is required" })} error={!!errors.subject_specialization} helperText={errors.subject_specialization?.message} />
@@ -116,7 +138,7 @@ const TeacherRegisterForm = () => {
 
           <FormControl fullWidth margin="normal" error={!!errors.assigned_class}>
             <InputLabel>Class</InputLabel>
-            <Select defaultValue="" label="Class" {...register("assigned_class", { required: "Class is required" })}>
+            <Select defaultValue="" {...register("assigned_class", { required: "Class is required" })}>
               {Array.from({ length: 12 }, (_, i) => (
                 <MenuItem key={i + 1} value={i + 1}>Class {i + 1}</MenuItem>
               ))}
@@ -126,7 +148,7 @@ const TeacherRegisterForm = () => {
 
           <FormControl fullWidth margin="normal" error={!!errors.division}>
             <InputLabel>Division</InputLabel>
-            <Select defaultValue="" label="Division" {...register("division", { required: "Division is required" })}>
+            <Select defaultValue="" {...register("division", { required: "Division is required" })}>
               <MenuItem value="A">A</MenuItem>
               <MenuItem value="B">B</MenuItem>
             </Select>
@@ -136,7 +158,9 @@ const TeacherRegisterForm = () => {
           <TextField fullWidth label="Date of Joining" type="date" margin="normal" InputLabelProps={{ shrink: true }} {...register("date_of_joining", { required: "Date of joining is required" })} error={!!errors.date_of_joining} helperText={errors.date_of_joining?.message} />
           <TextField fullWidth label="Status" margin="normal" defaultValue="active" {...register("status")} />
 
-          <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>Register</Button>
+          <Button type="submit" variant="contained" fullWidth sx={{ mt: 3, p: 1.2, fontWeight: "bold" }}>
+            Register Teacher
+          </Button>
         </Box>
       </Paper>
     </Container>

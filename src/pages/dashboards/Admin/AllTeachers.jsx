@@ -22,7 +22,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
@@ -30,6 +30,8 @@ import GroupIcon from "@mui/icons-material/Group";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DownloadIcon from "@mui/icons-material/Download";
 import SearchIcon from "@mui/icons-material/Search";
+import SchoolIcon from "@mui/icons-material/School";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import axios from "../../../api/axios";
 
 const AllTeachers = () => {
@@ -43,8 +45,9 @@ const AllTeachers = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
-  // ✅ Fetch Teachers with Search & Pagination
+  // ✅ Fetch Teachers
   const fetchTeachers = async (pageNum = 1, query = "") => {
     setLoading(true);
     setError("");
@@ -59,7 +62,7 @@ const AllTeachers = () => {
     }
   };
 
-  // ✅ Debounce search to avoid multiple API calls
+  // ✅ Debounce search
   useEffect(() => {
     const delay = setTimeout(() => fetchTeachers(page, search), 400);
     return () => clearTimeout(delay);
@@ -79,7 +82,7 @@ const AllTeachers = () => {
     }
   };
 
-  // ✅ Export Teachers CSV
+  // ✅ Export CSV
   const handleExportCSV = async () => {
     try {
       const res = await axios.get("/api/teachers/export", { responseType: "blob" });
@@ -95,84 +98,49 @@ const AllTeachers = () => {
     }
   };
 
-  // ✅ Error State
   if (error) {
     return <Alert severity="error" sx={{ mt: 4, mx: "auto", maxWidth: 600 }}>{error}</Alert>;
   }
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 6 }}>
-      {/* 🔹 Header */}
-      <Box
-        sx={{
-          background: "linear-gradient(to right, #1976d2, #42a5f5)",
-          color: "#fff",
-          borderRadius: 3,
-          p: 3,
-          mb: 3,
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          justifyContent: "space-between",
-          alignItems: isMobile ? "flex-start" : "center",
-          gap: 2,
-          boxShadow: 3,
-        }}
-      >
-        <Typography variant="h5" display="flex" alignItems="center" gap={1}>
-          <PersonIcon fontSize="large" /> All Teachers
-        </Typography>
+      {/* ✅ Header */}
+      <Box display="flex" flexDirection="column" gap={2} p={2} mb={3} borderRadius={3} boxShadow={3} bgcolor="#f0f4ff">
+        <Box display="flex" justifyContent="space-between" flexDirection={isMobile ? "column" : "row"} gap={2}>
+          <Typography variant="h4" fontWeight="bold" display="flex" alignItems="center" gap={1}>
+            <SchoolIcon color="primary" /> All Teachers
+          </Typography>
 
-        <Stack direction="row" spacing={2}>
-          <Button
-            startIcon={<DownloadIcon />}
-            onClick={handleExportCSV}
-            variant="outlined"
-            sx={{
-              backgroundColor: "#fff",
-              color: "#1976d2",
-              fontWeight: 600,
-              "&:hover": { backgroundColor: "#e3f2fd" },
-            }}
-          >
-            Export CSV
-          </Button>
+          <Stack direction="row" spacing={2}>
+            <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleExportCSV}>
+              Export CSV
+            </Button>
+            <Button variant="contained" startIcon={<PersonAddAltIcon />} onClick={() => navigate("/dashboard/register/teacher")}>
+              Register Teacher
+            </Button>
+          </Stack>
+        </Box>
 
-          <Button
-            variant="contained"
-            startIcon={<AddCircleOutlineIcon />}
-            component={Link}
-            to="/dashboard/register/teacher"
-            sx={{
-              backgroundColor: "#fff",
-              color: "#1976d2",
-              fontWeight: 600,
-              "&:hover": { backgroundColor: "#e3f2fd" },
-            }}
-          >
-            Register Teacher
-          </Button>
-        </Stack>
+        {/* ✅ Search */}
+        <TextField
+          placeholder="Search by name, email, or phone..."
+          variant="outlined"
+          size="small"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          fullWidth
+          sx={{ mb: 2 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
       </Box>
 
-      {/* 🔍 Search Bar */}
-      <TextField
-        placeholder="Search by name, email, or phone..."
-        variant="outlined"
-        size="small"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        fullWidth
-        sx={{ mb: 2 }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon color="action" />
-            </InputAdornment>
-          ),
-        }}
-      />
-
-      {/* 🔹 Teachers Table */}
+      {/* ✅ Teachers Table */}
       <Paper elevation={4} sx={{ p: 2, borderRadius: 3, overflowX: "auto", minHeight: 250 }}>
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" height={150}>
@@ -232,7 +200,7 @@ const AllTeachers = () => {
         )}
       </Paper>
 
-      {/* 🔹 Pagination */}
+      {/* ✅ Pagination */}
       {count > 1 && (
         <Box display="flex" justifyContent="center" mt={3}>
           <Pagination
